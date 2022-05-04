@@ -1,7 +1,7 @@
--- just intonation
--- in1 v/oct 12tet
--- in2 0-5v controlling chord inversion
+-- just intonation chord progression sequencer
+-- in1 new step trigger
 -- out1-4 v/oct quantized to ji scale
+s = sequins
 available_tunings = {
     ptolemaic = {1 / 1, 16 / 15, 9 / 8, 6 / 5, 5 / 4, 4 / 3, 45 / 32, 3 / 2, 8 / 5, 5 / 3, 9 / 5, 15 / 8},
     overtone = {1 / 1, 17 / 16, 9 / 8, 19 / 16, 5 / 4, 21 / 16, 11 / 8, 3 / 2, 13 / 8, 27 / 16, 7 / 4, 15 / 8},
@@ -35,6 +35,11 @@ root_notes = {
     ["B"] = 11
 }
 
+progressions = {
+    ['6711'] = s {9, 11, 0, 0},
+    ['147'] = s {1, 5, 11}
+}
+
 scales = {
     ['major'] = {{4, 7, 11}, {5, 7, 11}, {3, 7, 11}, {5, 7, 11}, {3, 7, 11}, {4, 7, 11}, {5, 7, 11}, {4, 7, 11},
                  {5, 7, 11}, {3, 7, 11}, {5, 7, 11}, {3, 6, 11}},
@@ -43,10 +48,14 @@ scales = {
 }
 
 -- setup
-root = 'F#'
-tuning = "welltunedpiano"
+root = 'D#'
+tuning = 'welltunedpiano'
+progression = '147'
 scale = 'minor'
 base_octave = 1
+public {
+    do_random_inversion = false
+}
 
 -- code
 function make_chord(volts, third, fifth, seventh)
@@ -59,6 +68,10 @@ function make_chord(volts, third, fifth, seventh)
 end
 
 function apply_inversion(notes)
+    if not public.do_random_inversion then
+        return notes
+    end
+    inversion = math.random(3)
     if inversion == 2 then
         notes = {
             root = notes.third,
@@ -91,35 +104,30 @@ function apply_scale(v)
     return notes
 end
 
-input[1].stream = function(v)
-    local notes = apply_scale(v)
-    if inversion ~= 1 then
-        notes = apply_inversion(notes)
-    end
+input[1].change = function()
+    local notes = apply_scale(tuning[progression() % #tuning + 1])
+
     output[1].volts = notes.root
     output[2].volts = notes.third
     output[3].volts = notes.fifth
     output[4].volts = notes.seventh
 end
 
-input[2].window = function(v)
-    inversion = v
-    print("inversion:", inversion - 1)
-end
-
 function init()
     print("root:       ", root)
     print("scale:      ", scale)
     print("base octave:", base_octave)
+    print("progression:", progression)
 
     root = root_notes[root]
     tuning = available_tunings[tuning]
+    progression = progressions[progression]
     scale = scales[scale]
-    inversion = 1
 
-    input[1].mode('stream', 0.005)
-    input[2].mode('window', {1.25, 2.5, 3.75}, 0.01)
-    for n = 1, 4 do
+    input[1].mode('change', 1, 0.1, 'rising')
+    for n = 1, 3 do
         output[n].scale(just12(tuning, 2 ^ (root / 12)), #tuning)
+        output[n].volts = 0
+        output[n].slew = 0
     end
 end
