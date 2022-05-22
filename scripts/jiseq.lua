@@ -41,7 +41,7 @@ root_notes = {
 
 -- setup
 root = 'D#'
-tuning = 'orwell22edo'
+tuning = 'welltunedpiano'
 length_offset = 0.3
 length_range = 2 -- length range in clock divisions
 public {
@@ -54,13 +54,13 @@ public {
     change_lengths = true
 }
 public {
-    do_slew = false
+    do_slew = true
 }
 public {
     do_random_inversion = false
 }
 public {
-    do_random_octave = false
+    do_random_octave = true
 }
 public {
     octave_offset = 1
@@ -184,7 +184,7 @@ function init()
     input[1].mode('change', 1, 0.1, 'rising')
     input[2].mode('window', {1.25, 2.5, 3.75}, 0.01)
     for n = 1, 3 do
-        output[n].scale(just12(tuning, 2 ^ (root / 12)), #tuning)
+        -- output[n].scale(just12(tuning, 2 ^ (root / 12)), #tuning)
         output[n].volts = 0
         output[n].slew = 0
     end
