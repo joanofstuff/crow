@@ -43,18 +43,24 @@ scales = {
 }
 
 -- setup
-root = 'F#'
+root = 'D#'
 tuning = "welltunedpiano"
 scale = 'minor'
-base_octave = 1
+octave_offset = 0
+do_7th_chords = true
 
 -- code
 function make_chord(volts, third, fifth, seventh)
-    return {
-        root = volts + base_octave,
-        third = volts + 1 / 12 * third + base_octave,
-        fifth = volts + 1 / 12 * fifth + base_octave,
-        seventh = volts + 1 / 12 * seventh + base_octave
+    return do_chords and {
+        root = volts + octave_offset,
+        third = volts + 1 / 12 * third + octave_offset,
+        fifth = volts + 1 / 12 * fifth + octave_offset,
+        seventh = volts + 1 / 12 * seventh + octave_offset
+    } or {
+        root = volts + octave_offset,
+        third = volts + octave_offset,
+        fifth = volts + octave_offset,
+        seventh = volts + octave_offset
     }
 end
 
@@ -110,7 +116,8 @@ end
 function init()
     print("root:       ", root)
     print("scale:      ", scale)
-    print("base octave:", base_octave)
+    print("octave offset:", octave_offset)
+    print("do 7th chords:", do_chords)
 
     root = root_notes[root]
     tuning = available_tunings[tuning]

@@ -37,29 +37,29 @@ root_notes = {
 -- setup
 in1_root = 'F#'
 in1_tuning = "welltunedpiano"
-in1_base_octave = 1
+in1_octave_offset = 1
 
 in2_root = 'F#'
 in2_tuning = "welltunedpiano"
-in2_base_octave = 1
+in2_octave_offset = 1
 
 -- code
 
 input[1].stream = function(v)
-    output[1].volts = v + in1_base_octave
-    output[2].volts = v + 7 / 12 + in1_base_octave
+    output[1].volts = v + in1_octave_offset
+    output[2].volts = v + 7 / 12 + in1_octave_offset
 end
 
 input[2].stream = function(v)
-    output[3].volts = v + in2_base_octave
-    output[4].volts = v + 7 / 12 + in2_base_octave
+    output[3].volts = v + in2_octave_offset
+    output[4].volts = v + 7 / 12 + in2_octave_offset
 end
 
 function init()
     print("in1 root:       ", in1_root)
-    print("in1 base octave:", in1_base_octave)
+    print("in1 octave offset:", in1_octave_offset)
     print("in2 root:       ", in2_root)
-    print("in2 base octave:", in2_base_octave)
+    print("in2 octave offset:", in2_octave_offset)
 
     in1_root = root_notes[in1_root]
     in1_tuning = available_tunings[in1_tuning]
