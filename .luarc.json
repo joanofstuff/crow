@@ -1,0 +1,11 @@
+{
+  "diagnostics.globals": [
+    "clock",
+    "init",
+    "input",
+    "output",
+    "public",
+    "sequins",
+    "timeline"
+  ]
+}
